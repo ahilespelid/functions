@@ -121,7 +121,7 @@ if(!function_exists('is_email')){function is_email(string $email){return (false 
 ///*/ Фукция проверяет строку на json ///*/
 if(!function_exists('is_json')){function is_json($json){
     $decoded = @json_decode($json);
-return \JSON_ERROR_NONE === json_last_error() ? json_encode($decoded, \JSON_FORCE_OBJEC) : null;}}
+return \JSON_ERROR_NONE === json_last_error() ? json_encode($decoded, \JSON_FORCE_OBJECT) : null;}}
 ///*/ Фукция проверяет переменную на true ///*/
 if(!function_exists('is_true')){function is_true($bool){
     $ret = (true === is_bool($bool) && true === $bool) ? true : false;
@@ -137,7 +137,7 @@ function translit(string $t){
 return strtr($t, $converter);}
 ///*/ Функция разбивает строку по разделителям переданным в массиве///*/
 if(!function_exists('mexplode')){function mexplode(array $delimiters, string $string){
-    $chr = '::::::::::::::::::::::::::::::::::::::::::::::::';
+    $chr = '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::';
 return explode($chr, str_replace($delimiters, $chr, $string));}}
 
 //------------------------------------------------------------------------------STRING-GENERATORS------------------------------------------------------------------------------------------------------------------------//  
@@ -163,7 +163,7 @@ if(!function_exists('com_create_guid')){function com_create_guid(){
     $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
 return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));}}
                                     
-//------------------------------------------------------------------------------DATA-EXCHANGE-----------------------------------------------------------------------------------------------------------------------------------//  
+//------------------------------------------------------------------------------DATA-EXCHANGE----------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Метод эмитации post запроса из php///*/
 if(!function_exists('post')){function post(string $url, array $data, array $headers = [], bool $data_json_encode = false){
     $data = ($data_json_encode) ? json_encode($data) : http_build_query($data);
@@ -179,25 +179,46 @@ if(!function_exists('get')){function get(string $url, $agent = 'Mozilla/5.0 (Win
 return $ret;}}
 
 ///*/ahilespelid///*/
+///*/musa///*/
+///*/Функция для форматирования даты///*/
 
-// Функция для форматирования даты musa 
-if(!function_exists('format_date_intl')) {
-    function format_date_intl($date, $lang = 'ru_RU',$date_format = 'd MMMM yyyy') {
-        $formatter = new IntlDateFormatter(
-            'ru_RU', 
-            IntlDateFormatter::FULL, 
-            IntlDateFormatter::NONE,
-            'Europe/Moscow', 
-            IntlDateFormatter::GREGORIAN, 
-            $date_format
-        );
-        $timestamp = strtotime($date);
-        return $formatter->format($timestamp);
-    }
-}
+if(!function_exists('format_date_intl')){
+    function format_date_intl(string $date, string $lang = 'russian'): ?string {
+        if(!$d = is_date($date)){return null;}
+        
+        $supportedLocales = ['russian' => 'ru_RU', 'english' => 'en_US'];
+        $locale           = $supportedLocales[$lang] ?? 'ru_RU';
+//        $d = DateTime::createFromFormat('Y-m-d H:i:s', $date) ?: new DateTime($date);
+        $now              = new DateTime();
+        $yesterday        = (clone $now)->modify('-1 day');
+        
+        $diff = $now->getTimestamp() - $d->getTimestamp();
+        
+        if($diff < 3600 && $d->format('Y-m-d') === $now->format('Y-m-d')){
+            $minutes = floor($diff / 60);
+            return $minutes > 0 
+                ? ($lang === 'ru' ? "$minutes мин. назад" : "$minutes min. ago")
+                : ($lang === 'ru' ? "только что"          : "just now");}
+        
+        if($diff < 86400 && $d->format('Y-m-d') === $now->format('Y-m-d')){
+            $hours = floor($diff / 3600);
+            return $lang === 'ru' ? "$hours ч. назад"      : "$hours h. ago";}
+        
+        if($d->format('Y-m-d') === $yesterday->format('Y-m-d')){
+            $timeFormat = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::SHORT);
+            return ($lang === 'ru' ? 'Вчера в '            : 'Yesterday at ') . $timeFormat->format($d);}
+        
+        $dateFormat = new IntlDateFormatter($locale, IntlDateFormatter::LONG, IntlDateFormatter::NONE);
+return $dateFormat->format($d);}}
 
-if(!function_exists('first_slash')) {
-    function first_slash($str) {
-        return ('/' == $str) ? $str : '/' . $str;
-    }
-}
+
+// if(!function_exists('format_date_intl')){function format_date_intl($date, $lang = 'ru_RU', $date_format = 'd MMMM yyyy'){
+//     if(!($d = is_date($date))){return null;}
+//     $formatter = new IntlDateFormatter('ru_RU', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Europe/Moscow', IntlDateFormatter::GREGORIAN, $date_format);
+//     $timestamp = $d->getTimestamp();
+// return $formatter->format($timestamp);}}
+
+///*/ ВЫНЕСЕМ НА БРИФ ///*/
+if(!function_exists('first_slash')) {function first_slash($str){return ('/' == $str) ? $str : '/' . $str;}}
+
+///*/musa///*/

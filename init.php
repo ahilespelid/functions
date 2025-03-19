@@ -118,6 +118,8 @@ if(!function_exists('is_phone')){function is_phone(string $s, int $minDigits = 1
 return (preg_match('/^[7|8][0-9]{'.$minDigits.','.$maxDigits.'}\z/', $s)) ? $s : null;}}
 ///*/ahilespelid Проверка строки на email///*/
 if(!function_exists('is_email')){function is_email(string $email){return (false !== filter_var($email, FILTER_VALIDATE_EMAIL)) ? $email : null;}}
+///*/ahilespelid Проверка строки на ip///*/
+if(!function_exists('is_ip')){function is_ip(string $ip){return (false !== filter_var($ip, FILTER_VALIDATE_IP)) ? $ip : null;}}
 ///*/ Фукция проверяет строку на json ///*/
 if(!function_exists('is_json')){function is_json($json){
     $decoded = @json_decode($json);

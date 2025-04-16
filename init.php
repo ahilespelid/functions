@@ -118,7 +118,7 @@ if(!function_exists('is_ip')){function is_ip(string $ip){return (false !== filte
 ///*/ Фукция проверяет строку на json ///*/
 if(!function_exists('is_json')){function is_json($json){
     $decoded = @json_decode($json);
-return \JSON_ERROR_NONE === json_last_error() ? json_encode($decoded, \JSON_FORCE_OBJEC) : null;}}
+return \JSON_ERROR_NONE === json_last_error() ? json_encode($decoded, \JSON_FORCE_OBJECT) : null;}}
 ///*/ Фукция проверяет переменную на true ///*/
 if(!function_exists('is_true')){function is_true($bool){
     $ret = (true === is_bool($bool) && true === $bool) ? true : false;

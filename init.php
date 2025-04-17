@@ -139,6 +139,10 @@ return strtr($t, $converter);}
 if(!function_exists('mexplode')){function mexplode(array $delimiters, string $string){
     $chr = '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::';
 return explode($chr, str_replace($delimiters, $chr, $string));}}
+if(!function_exists('google_tanslate')){function google_tanslate($text, $from_lan = 'ru', $to_lan = 'en', $key = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw'){
+    $obj = json_decode(file_get_contents('https://translation.googleapis.com/language/translate/v2?q='.urlencode($text).'&source='.$from_lan.'&target='.$to_lan .'&format=text&key='.$key), true);
+    $ret = trim($obj['data']['translations']['0']['translatedText']);
+return (empty($ret)) ? false : $ret;}}
 
 //------------------------------------------------------------------------------STRING-GENERATORS------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Функция генерирует случайный префикс из ascii таблицы///*/
@@ -179,46 +183,3 @@ if(!function_exists('get')){function get(string $url, $agent = 'Mozilla/5.0 (Win
 return $ret;}}
 
 ///*/ahilespelid///*/
-///*/musa///*/
-///*/Функция для форматирования даты///*/
-
-if(!function_exists('format_date_intl')){
-    function format_date_intl(string $date, string $lang = 'russian'): ?string {
-        if(!$d = is_date($date)){return null;}
-        
-        $supportedLocales = ['russian' => 'ru_RU', 'english' => 'en_US'];
-        $locale           = $supportedLocales[$lang] ?? 'ru_RU';
-//        $d = DateTime::createFromFormat('Y-m-d H:i:s', $date) ?: new DateTime($date);
-        $now              = new DateTime();
-        $yesterday        = (clone $now)->modify('-1 day');
-        
-        $diff = $now->getTimestamp() - $d->getTimestamp();
-        
-        if($diff < 3600 && $d->format('Y-m-d') === $now->format('Y-m-d')){
-            $minutes = floor($diff / 60);
-            return $minutes > 0 
-                ? ($lang === 'ru' ? "$minutes мин. назад" : "$minutes min. ago")
-                : ($lang === 'ru' ? "только что"          : "just now");}
-        
-        if($diff < 86400 && $d->format('Y-m-d') === $now->format('Y-m-d')){
-            $hours = floor($diff / 3600);
-            return $lang === 'ru' ? "$hours ч. назад"      : "$hours h. ago";}
-        
-        if($d->format('Y-m-d') === $yesterday->format('Y-m-d')){
-            $timeFormat = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::SHORT);
-            return ($lang === 'ru' ? 'Вчера в '            : 'Yesterday at ') . $timeFormat->format($d);}
-        
-        $dateFormat = new IntlDateFormatter($locale, IntlDateFormatter::LONG, IntlDateFormatter::NONE);
-return $dateFormat->format($d);}}
-
-
-// if(!function_exists('format_date_intl')){function format_date_intl($date, $lang = 'ru_RU', $date_format = 'd MMMM yyyy'){
-//     if(!($d = is_date($date))){return null;}
-//     $formatter = new IntlDateFormatter('ru_RU', IntlDateFormatter::FULL, IntlDateFormatter::NONE, 'Europe/Moscow', IntlDateFormatter::GREGORIAN, $date_format);
-//     $timestamp = $d->getTimestamp();
-// return $formatter->format($timestamp);}}
-
-///*/ ВЫНЕСЕМ НА БРИФ ///*/
-if(!function_exists('first_slash')) {function first_slash($str){return ('/' == $str) ? $str : '/' . $str;}}
-
-///*/musa///*/

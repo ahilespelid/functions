@@ -181,5 +181,5 @@ if(!function_exists('get')){function get(string $url, $agent = 'Mozilla/5.0 (Win
     curl_setopt($curl, CURLOPT_HTTPHEADER, ['User-Agent: '.$agent]);
     $ret = curl_exec($curl); curl_close($curl);
 return $ret;}}
-
+ 
 ///*/ahilespelid///*/

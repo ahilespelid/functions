@@ -77,7 +77,7 @@ return (empty($ret)) ? null : $ret;}}
 ///*/ функция объединяет любое количество массивов с сохранением структур и значений///*/
 if(!function_exists('array_merge_save')){function array_merge_save(...$arrays){
     return array_reduce($arrays, function($c, $i){ 
-        return array_reduce(array_keys($i), function($c, $k) use ($i){
+        return array_reduce(array_keys($i ?? []), function($c, $k) use ($i){
             return $c + [$k => $c[$k] ?? [] + [$i[$k]]];}, $c);}, []);
 }}
 //------------------------------------------------------------------------------FILE-SYSTEM------------------------------------------------------------------------------------------------------------------------------//  

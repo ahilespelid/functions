@@ -71,6 +71,14 @@ if(!function_exists('array_merge_save')){function array_merge_save(...$arrays){
         return array_reduce(array_keys($i ?? []), function($c, $k) use ($i){
             return $c + [$k => $c[$k] ?? [] + [$i[$k]]];}, $c);}, []);
 }} /* $payload = (function_exists('array_merge_save')) ? array_merge_save($_REQUEST_JSON, $_GET, $_POST) : array_merge($_POST, $_GET, $_REQUEST_JSON); */
+///*/ функция разглаживает многомерный ассоциативный массив в одномерный с точками в ключах///*/
+if(!function_exists('array_flatten')){function array_flatten($array, $prefix = ''){
+    $ret = [];foreach($array as $k => $v){
+        $cur_k = is_string($k) ? ($prefix !== '' ? $prefix.'.'.$k : $k) : $prefix;
+        if(is_array($v)){$ret = array_merge($ret, array_flatten($v, $cur_k));}else
+        if(is_string($k)){$ret[$cur_k] = $v;}else
+        if($cur_k !== ''){$ret[$cur_k] = $v;}}
+return $ret;}}
 //------------------------------------------------------------------------------FILE-SYSTEM------------------------------------------------------------------------------------------------------------------------------//  
 ///*/ ahilespelid Метод возвращает путь до папки local/php_interface Bitrix при учёте что текущий файл лежит в local/php_interface///*/ 
 if(!function_exists('functions_path')){function functions_path(string $file=''){

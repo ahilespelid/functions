@@ -65,6 +65,12 @@ return $arBitrix;}}
 if(!function_exists('array_keys_starts_with')){function array_keys_starts_with(array $array, string $needle):?array{
     $ret = array_filter($array, function($v, $k) use($needle) {return strpos(strtolower($k), strtolower($needle)) === 0;}, ARRAY_FILTER_USE_BOTH);
 return (empty($ret)) ? null : $ret;}}
+///*/ функция объединяет любое количество массивов с сохранением структур и значений///*/
+if(!function_exists('array_merge_save')){function array_merge_save(...$arrays){
+    return array_reduce($arrays, function($c, $i){ 
+        return array_reduce(array_keys($i), function($c, $k) use ($i){
+            return $c + [$k => $c[$k] ?? [] + [$i[$k]]];}, $c);}, []);
+}}
 
 //------------------------------------------------------------------------------FILE-SYSTEM------------------------------------------------------------------------------------------------------------------------------//  
 ///*/ ahilespelid Метод возвращает путь до папки local/php_interface Bitrix при учёте что текущий файл лежит в local/php_interface///*/ 

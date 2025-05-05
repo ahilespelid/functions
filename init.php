@@ -188,11 +188,9 @@ if(!function_exists('post')){function post(string $url, array $data, array $head
     $ret = curl_exec($curl); curl_close($curl);
 return $ret;}}
 ///*/ Метод эмитации get запроса из php///*/
-if(!function_exists('get')){function get(string $url, $agent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'){
-    //curl_setopt_array($curl = curl_init(), $q = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_URL => $url]);
-    curl_setopt($curl = curl_init(), CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, ['User-Agent: '.$agent]);
-    $ret = curl_exec($curl); curl_close($curl);
-return $ret;}}
+if (!function_exists('get')) {function get(string $url, bool $asJson = false, string $agent = 'Mozilla/5.0'): mixed {
+    curl_setopt_array($curl = curl_init(), [CURLOPT_URL => $url, CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => ['User-Agent: ' . $agent]]);
+    $response = curl_exec($curl); curl_close($curl);   
+return ($response === false) ? null : ($asJson ? json_decode($response, true) : $response);}}
  
 ///*/ahilespelid///*/

@@ -152,7 +152,7 @@ return strtr($t, $converter);}
 if(!function_exists('mexplode')){function mexplode(array $delimiters, string $string){
     $chr = '::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::';
 return explode($chr, str_replace($delimiters, $chr, $string));}}
-if(!function_exists('google_tanslate')){function google_tanslate($text, $from_lan = 'ru', $to_lan = 'en', $key = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw'){
+if(!function_exists('google_translate')){function google_translate($text, $from_lan = 'ru', $to_lan = 'en', $key = 'AIzaSyBOti4mM-6x9WDnZIjIeyEU21OpBXqWBgw'){
     $obj = json_decode(file_get_contents('https://translation.googleapis.com/language/translate/v2?q='.urlencode($text).'&source='.$from_lan.'&target='.$to_lan .'&format=text&key='.$key), true);
     $ret = trim($obj['data']['translations']['0']['translatedText']);
 return (empty($ret)) ? false : $ret;}}

@@ -183,9 +183,9 @@ return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));}}
                                     
 //------------------------------------------------------------------------------DATA-EXCHANGE----------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Метод эмитации post запроса из php///*/
-if(!function_exists('post')){function post(string $url, array $data, array $headers = [], $params = ['opt' => [CURLOPT_RETURNTRANSFER => 1, CURLOPT_VERBOSE => 1], 'data_json_encode' => 0]){
+if(!function_exists('post')){function post(string $url, array $data, array $headers = [], $params = ['opt' => [CURLOPT_RETURNTRANSFER => true, CURLOPT_VERBOSE => true], 'data_json_encode' => false]){
     if(empty($url) || empty($params['opt'])) return null;
-    $params['opt'][CURLOPT_URL] = $url; $params['opt'][CURLOPT_POST] = 1; 
+    $params['opt'][CURLOPT_URL] = $url; $params['opt'][CURLOPT_POST] = true; 
     if(!empty($data))    $params['opt'][CURLOPT_POSTFIELDS] = ($params['data_json_encode']) ? json_encode($data) : http_build_query($data);
     if(!empty($headers)) $params['opt'][CURLOPT_HTTPHEADER] = $headers;
     pa([$params]);

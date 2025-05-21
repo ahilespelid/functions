@@ -184,7 +184,7 @@ return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));}}
 //------------------------------------------------------------------------------DATA-EXCHANGE----------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Метод эмитации post запроса из php///*/
 if(!function_exists('post')){function post(string $url, array $data, array $headers = [], $params = ['opt' => [CURLOPT_RETURNTRANSFER => true, CURLOPT_VERBOSE => true], 'data_json_encode' => false]){
-    if(empty($url) || empty($params['opt'])) return null;
+    if(empty($url)){return null;}
     $params['opt'] = (empty($params['opt'])) ? [CURLOPT_RETURNTRANSFER => true, CURLOPT_VERBOSE => true] : $params['opt'];
     $params['opt'][CURLOPT_URL] = $url; 
     $params['opt'][CURLOPT_POST] = true; 
@@ -194,9 +194,13 @@ if(!function_exists('post')){function post(string $url, array $data, array $head
     $ret = curl_exec($curl); curl_close($curl);
 return $ret;}}
 ///*/ Метод эмитации get запроса из php///*/
-if (!function_exists('get')) {function get(string $url, bool $asJson = false, string $agent = 'Mozilla/5.0'): mixed {
-    curl_setopt_array($curl = curl_init(), [CURLOPT_URL => $url, CURLOPT_RETURNTRANSFER => true, CURLOPT_HTTPHEADER => ['User-Agent: ' . $agent]]);
+if (!function_exists('get')) {function get(string $url, array $headers = ['User-Agent: Mozilla/5.0'], $params = ['opt' => [CURLOPT_RETURNTRANSFER => true], 'response_json_decode' => false]): mixed {
+    if(empty($url)){return null;}
+    $params['opt'] = (empty($params['opt'])) ? [CURLOPT_RETURNTRANSFER => true] : $params['opt'];
+    $params['opt'][CURLOPT_URL] = $url;
+    if(!empty($headers)){$params['opt'][CURLOPT_HTTPHEADER] = $headers;}
+    curl_setopt_array($curl = curl_init(), $params['opt']);
     $response = curl_exec($curl); curl_close($curl);   
-return ($response === false) ? null : ($asJson ? json_decode($response, true) : $response);}}
+return ($response === false) ? null : ($params['response_json_decode'] ? json_decode($response, true) : $response);}}
  
 ///*/ahilespelid///*/

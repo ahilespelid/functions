@@ -185,10 +185,10 @@ return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));}}
 ///*/ Метод эмитации post запроса из php///*/
 if(!function_exists('post')){function post(string $url, array $data, array $headers = [], bool $data_json_encode = false){
     if(empty($url)) return null;
+    $q = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_VERBOSE => 1, CURLOPT_URL => $url, CURLOPT_POST => 1];
     if(!empty($data))    $q[CURLOPT_POSTFIELDS] = ($data_json_encode) ? json_encode($data) : http_build_query($data);
     if(!empty($headers)) $q[CURLOPT_HTTPHEADER] = $headers;
-    $q = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_VERBOSE => 1, CURLOPT_URL => $url, CURLOPT_POST => 1];
-    pa($q);
+    pa([$q]);
     curl_setopt_array($curl = curl_init(), $q);
     $ret = curl_exec($curl); curl_close($curl);
 return $ret;}}

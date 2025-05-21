@@ -188,6 +188,7 @@ if(!function_exists('post')){function post(string $url, array $data, array $head
     if(!empty($data))    $q[CURLOPT_POSTFIELDS] = ($data_json_encode) ? json_encode($data) : http_build_query($data);
     if(!empty($headers)) $q[CURLOPT_HTTPHEADER] = $headers;
     $q = [CURLOPT_RETURNTRANSFER => 1, CURLOPT_VERBOSE => 1, CURLOPT_URL => $url, CURLOPT_POST => 1];
+    pa($q);
     curl_setopt_array($curl = curl_init(), $q);
     $ret = curl_exec($curl); curl_close($curl);
 return $ret;}}

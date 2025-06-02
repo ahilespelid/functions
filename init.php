@@ -119,7 +119,9 @@ if(!function_exists('img_base64')){function img_base64(string $file, string $typ
 return $ret;}}
 
 ///*/ ahilespelid Метод возвращает svg код из картинки svg ///*/ 
-if(!function_exists('svg')){function svg(string $file, string $default = null): string {return $ret = (empty($file = img_path($file))) ? $default ?? '<svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' : file_get_contents($file);}}
+if(!function_exists('svg')){function svg(string $file, string $default = null, $attr = []): string {
+    $ret = (empty($file = img_path($file))) ? $default ?? '<svg class="text-gray-400" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' : file_get_contents($file); 
+return array_reduce(array_keys($attr), fn($c, $k) => preg_replace("/$k=\"[^\"]*\"/i", "$k=\"{$attr[$k]}\"", $c) ?: str_replace('<svg', "<svg $k=\"{$attr[$k]}\"", $c), $svg);}}
 
 //------------------------------------------------------------------------------IS-CONDITIONS----------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Функция проверка строки на дату ///*/

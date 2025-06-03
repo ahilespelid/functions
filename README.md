@@ -1,7 +1,7 @@
 install bitrix code <br>
 <code>
 #/usr/bin/php
-use Bitrix\Main\{Data\Cache, IO\File, Web\HttpClient};
+use Bitrix\Main\\{Data\Cache, IO\File, Web\HttpClient};
 $cache = Cache::createInstance(); $cacheId = 'gh_func'; $cacheDir = '/gh/'; $local = $_SERVER['DOCUMENT_ROOT'].'/finit.php';
 if($cache->initCache(86400, $cacheId, $cacheDir)){include($cache->getVars()['file']);}elseif($cache->startDataCache()){  
     try{

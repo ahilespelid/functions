@@ -134,7 +134,7 @@ if(!function_exists('is_email')){function is_email(string $email){return (false 
 ///*/ahilespelid Проверка строки на ip///*/
 if(!function_exists('is_ip')){function is_ip(string $ip){return (false !== filter_var($ip, FILTER_VALIDATE_IP)) ? $ip : null;}}
 ///*/ Фукция проверяет строку на json ///*/
-if(!function_exists('is_json')){function is_json($json){
+if(!function_exists('is_json')){function is_json(string $json){
     $decoded = @json_decode($json);
 return \JSON_ERROR_NONE === json_last_error() ? json_encode($decoded, \JSON_FORCE_OBJECT) : null;}}
 ///*/ Фукция проверяет переменную на true ///*/

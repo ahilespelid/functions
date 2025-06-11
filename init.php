@@ -159,6 +159,10 @@ if(!function_exists('google_translate')){function google_translate($text, $from_
     $obj = json_decode(file_get_contents('https://translation.googleapis.com/language/translate/v2?q='.urlencode($text).'&source='.$from_lan.'&target='.$to_lan .'&format=text&key='.$key), true);
     $ret = trim($obj['data']['translations']['0']['translatedText']);
 return (empty($ret)) ? false : $ret;}}
+///*/ Функция проверяет вхождение слова в строку ///*/
+if(!function_exists('word_contains')){function word_contains(string $text, string $word): bool {
+    $escaped = preg_quote($word, '/');
+return (bool) preg_match("/(^|\W)" . $escaped . "(\W|$)/", $text);}}
 
 //------------------------------------------------------------------------------STRING-GENERATORS------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Функция генерирует случайный префикс из ascii таблицы///*/

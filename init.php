@@ -88,6 +88,16 @@ if(!function_exists('array_flatten')){function array_flatten($array, $prefix = '
         if(is_string($k)){$ret[$cur_k] = $v;}else
         if($cur_k !== ''){$ret[$cur_k] = $v;}}
 return $ret;}}
+if(!function_exists('array_unflatten')){function array_unflatten(array $flatArray): array {
+    $result = []; foreach ($flatArray as $key => $value){
+        if(!is_string($key)){continue;} // Проверяем, что ключ — строк
+        $keys = explode('.', $key); 
+        $current = &$result;
+        foreach($keys as $index => $segment){
+            if($index === count($keys) -]){$current[$segment] = $value;}else{
+                if(!isset($current[$segment]) || !is_array($current[$segment])){$current[$segment] = [];}
+                $current = &$current[$segment];}}} 
+return $result;}}
 //------------------------------------------------------------------------------FILE-SYSTEM------------------------------------------------------------------------------------------------------------------------------//  
 ///*/ ahilespelid Метод возвращает путь до папки local/php_interface Bitrix при учёте что текущий файл лежит в local/php_interface///*/ 
 if(!function_exists('functions_path')){function functions_path(string $file=''){

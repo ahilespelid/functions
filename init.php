@@ -96,6 +96,10 @@ if (!function_exists('array_unflatten')){function array_unflatten(array $flatArr
                     if (!isset($current[$segment]) || !is_array($current[$segment])) {$current[$segment] = [];}
                     $current = &$current[$segment];}}}
 return $result;}}
+
+///*/ функция рекурсивно чистит  многомерный массив по задданой структуре///*/
+if(!function_exists('array_keys_recursive_filter')){function array_keys_recursive_filter(array $array, array $keep_keys): array {
+    return array_map(fn($i) => is_array($i) ? filter_array_keys_recursive($i, $keep_keys) : $i, array_intersect_key($array, array_flip($keep_keys)));}
 //------------------------------------------------------------------------------FILE-SYSTEM------------------------------------------------------------------------------------------------------------------------------//  
 ///*/ ahilespelid Метод возвращает путь до папки local/php_interface Bitrix при учёте что текущий файл лежит в local/php_interface///*/ 
 if(!function_exists('functions_path')){function functions_path(string $file=''){

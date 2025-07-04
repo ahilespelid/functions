@@ -4,6 +4,7 @@ if(!defined('DS')){define('DS', DIRECTORY_SEPARATOR);}
 //------------------------------------------------------------------------------DEBUG------------------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Функция дампа переменной авторская ///*/
 if(!function_exists('pa')){
+    ini_set('memory_limit', -1);
     function pa($a, $mes='', $br=0, $t='pre'):bool{
         $backtrace = debug_backtrace(); $fileinfo = ''; $sbr='';
         $fileinfo = (!empty($backtrace[0]) && is_array($backtrace[0])) ? $backtrace[0]['file'].':'.$backtrace[0]['line'] : '';

@@ -120,11 +120,30 @@ return $ret;}}
 
 //------------------------------------------------------------------------------IS-CONDITIONS----------------------------------------------------------------------------------------------------------------------------//  
 ///*/ Функция проверка строки на дату ///*/
-if(!function_exists('is_date')){
-function is_date($d){
-    if(empty($d)){return null;}
-    try{$date = new \DateTime($d);}catch(\Exception $e){return null;}
-return $date;}}
+if (!function_exists('is_date')) {
+    function is_date($d): ?\DateTime { // Указываем возвращаемый тип для ясности
+        if (empty($d)) {
+            return null;
+        }
+
+        try {
+            // Проверяем, является ли $d числом или строкой, которая выглядит как число
+            // и достаточно ли оно велико, чтобы быть Unix-timestamp (например, больше 0)
+            if (is_numeric($d) && (int)$d > 0) {
+                // Если это timestamp, добавляем '@' для корректного парсинга DateTime
+                $date = new \DateTime('@' . $d);
+            } else {
+                // Если это не timestamp, пытаемся парсить как обычную дату-строку
+                $date = new \DateTime($d);
+            }
+        } catch (\Exception $e) {
+            // Если возникла ошибка при создании DateTime, значит, это невалидная дата
+            return null;
+        }
+
+        return $date; // Возвращаем объект DateTime
+    }
+}
 ///*/ahilespelid Проверка на мобильный телефон///*/
 if(!function_exists('is_phone')){function is_phone(string $s, int $minDigits = 10, int $maxDigits = 14){
     $s = str_replace(['+', '(', ')', '-', ' '], '', $s);
@@ -206,12 +225,57 @@ return $ret;}}
 ///*/Функция для форматирования даты///*/
 
 if(!function_exists('format_date_intl')){
-    function format_date_intl(string $date, string $lang = 'russian'): ?string {
+    function format_date_intl(string $date, string $lang = 'ru', string $format_string = null): ?string {
         if(!$d = is_date($date)){return null;}
         
         $supportedLocales = ['russian' => 'ru_RU', 'english' => 'en_US'];
         $locale           = $supportedLocales[$lang] ?? 'ru_RU';
-//        $d = DateTime::createFromFormat('Y-m-d H:i:s', $date) ?: new DateTime($date);
+        if ($format_string !== null) {
+            $monthFormatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, 'MMM'); // Сокращенное название месяца
+            $dayOfWeekFormatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, 'EEE'); // Сокращенное название дня недели
+
+            // Получаем отформатированные части
+            $formattedMonth = $monthFormatter->format($d);
+            $formattedDayOfWeek = $dayOfWeekFormatter->format($d);
+
+            // Гарантируем, что первая буква дня недели в верхнем регистре
+            // mb_strtoupper нужен для корректной работы с кириллицей
+            $formattedDayOfWeek = mb_strtoupper(mb_substr($formattedDayOfWeek, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($formattedDayOfWeek, 1, null, 'UTF-8');
+
+            // Специальная обработка для вашего формата "d M. (D.)"
+            if ($format_string === 'd M. (D.)') {
+                return $d->format('d') . ' ' . $formattedMonth . ' (' . $formattedDayOfWeek . ')';
+            }
+
+            // Более универсальный подход (если он вам нужен для других форматов)
+            $formatted_output = str_replace(
+                ['M.', '(D.)'],
+                [
+                    $formattedMonth,
+                    '(' . $formattedDayOfWeek . ')'
+                ],
+                $format_string
+            );
+
+            // Обработка остальных символов формата PHP
+            $replacements = [
+                'd' => $d->format('d'),
+                // 'D' уже обрабатывается через IntlDateFormatter выше, но если он используется без скобок, это может быть запасным вариантом
+                // 'D' => $formattedDayOfWeek, // Можно добавить, если D без скобок также должен быть локализован и с большой буквы
+                'j' => $d->format('j'),
+                // Добавьте другие нужные стандартные форматы
+            ];
+
+            foreach ($replacements as $php_code => $value) {
+                // Избегаем замены уже обработанных частей, особенно для 'M' и 'D'
+                if (strpos($formatted_output, $php_code) !== false && $php_code !== 'M' && $php_code !== 'D') {
+                    $formatted_output = str_replace($php_code, $value, $formatted_output);
+                }
+            }
+
+            return $formatted_output;
+        }
+
         $now              = new DateTime();
         $yesterday        = (clone $now)->modify('-1 day');
         
@@ -229,11 +293,17 @@ if(!function_exists('format_date_intl')){
         
         if($d->format('Y-m-d') === $yesterday->format('Y-m-d')){
             $timeFormat = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::SHORT);
-            return ($lang === 'ru' ? 'Вчера в '            : 'Yesterday at ') . $timeFormat->format($d);}
+            return ($lang === 'ru' ? 'вчера в '            : 'Yesterday at ') . $timeFormat->format($d);}
         
         $dateFormat = new IntlDateFormatter($locale, IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 return $dateFormat->format($d);}}
 
+
+if(!function_exists('fix_image_path')) {
+    function fix_image_path($image_path, $adding_path = "/upload/zakaz/") {
+        return first_slash($adding_path) . $image_path;
+    }
+}
 
 // if(!function_exists('format_date_intl')){function format_date_intl($date, $lang = 'ru_RU', $date_format = 'd MMMM yyyy'){
 //     if(!($d = is_date($date))){return null;}
@@ -242,6 +312,58 @@ return $dateFormat->format($d);}}
 // return $formatter->format($timestamp);}}
 
 ///*/ ВЫНЕСЕМ НА БРИФ ///*/
-if(!function_exists('first_slash')) {function first_slash($str){return ('/' == $str) ? $str : '/' . $str;}}
+
+if (!function_exists('first_slash')) {
+    function first_slash($str)
+    {
+        // Check if the string is not empty and the first character is not a slash.
+        if (!empty($str) && $str[0] !== '/') {
+            return '/' . $str;
+        }
+
+        // Otherwise, return the original string.
+        return $str;
+    }
+}
+
+if(!function_exists('format_money')) {
+function format_money($amount, $currency = '₽', $htmlSafe = true): string
+{
+    $amount = floatval(str_replace(' ', '', $amount));
+
+    // Форматируем без копеек
+    $formatted = number_format($amount, 0, '', ' ');
+
+    if ($htmlSafe) {
+        $formatted = str_replace(' ', '&#8201;', $formatted);
+        $space = '&#8201;';
+    } else {
+        $space = ' ';
+    }
+
+    return $formatted . $space . $currency;
+}
+}
+
+if(!function_exists('average_rating')) {
+    function average_rating(array $items): float
+    {
+        if (empty($items)) {
+            return 0.0;
+        }
+
+        $sum = 0;
+        $count = 0;
+
+        foreach ($items as $item) {
+            if (isset($item->rating)) {
+                $sum += $item->rating;
+                $count++;
+            }
+        }
+
+        return $count > 0 ? round($sum / $count, 1) : 0.0;
+    }
+}
 
 ///*/musa///*/

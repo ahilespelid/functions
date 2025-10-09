@@ -231,6 +231,10 @@ if(!function_exists('format_date_intl')){
         $supportedLocales = ['russian' => 'ru_RU', 'english' => 'en_US'];
         $locale           = $supportedLocales[$lang] ?? 'ru_RU';
         if ($format_string !== null) {
+            if (preg_match('/[dMy]+/u', $format_string)) {
+                $formatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, $format_string);
+                return $formatter->format($d);
+            }
             $monthFormatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, 'MMM'); // Сокращенное название месяца
             $dayOfWeekFormatter = new IntlDateFormatter($locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, null, null, 'EEE'); // Сокращенное название дня недели
 
@@ -359,10 +363,30 @@ if(!function_exists('average_rating')) {
             if (isset($item->rating)) {
                 $sum += $item->rating;
                 $count++;
+            } else if (isset($item['rating'])) {
+                $sum += $item['rating'];
+                $count++;
             }
         }
 
         return $count > 0 ? round($sum / $count, 1) : 0.0;
+    }
+}
+
+if (!function_exists('files_to_images')) {
+    /**
+     * Преобразовать files в массив изображений
+     *
+     * @param  string|array|null  $files
+     * @return array
+     */
+    function files_to_images($files): array
+    {
+        if (is_string($files)) {
+            $files = json_decode($files, true) ?? [];
+        }
+
+        return $files['result'] ?? [];
     }
 }
 

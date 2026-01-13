@@ -302,6 +302,18 @@ if(!function_exists('format_date_intl')){
         $dateFormat = new IntlDateFormatter($locale, IntlDateFormatter::LONG, IntlDateFormatter::NONE);
 return $dateFormat->format($d);}}
 
+if (!function_exists('first_slash')) {
+    function first_slash($str)
+    {
+        // Check if the string is not empty and the first character is not a slash.
+        if (!empty($str) && $str[0] !== '/') {
+            return '/' . $str;
+        }
+
+        // Otherwise, return the original string.
+        return $str;
+    }
+}
 
 if(!function_exists('fix_image_path')) {
     function fix_image_path($image_path, $adding_path = "/upload/zakaz/") {
@@ -316,19 +328,6 @@ if(!function_exists('fix_image_path')) {
 // return $formatter->format($timestamp);}}
 
 ///*/ ВЫНЕСЕМ НА БРИФ ///*/
-
-if (!function_exists('first_slash')) {
-    function first_slash($str)
-    {
-        // Check if the string is not empty and the first character is not a slash.
-        if (!empty($str) && $str[0] !== '/') {
-            return '/' . $str;
-        }
-
-        // Otherwise, return the original string.
-        return $str;
-    }
-}
 
 if(!function_exists('format_money')) {
 function format_money($amount, $currency = '₽', $htmlSafe = true): string
@@ -388,6 +387,50 @@ if (!function_exists('files_to_images')) {
 
         return $files['result'] ?? [];
     }
+}
+
+use Illuminate\Support\Facades\Auth;
+use App\Models\Workshop;
+
+if (!function_exists('is_users_workshop')) {
+    function is_users_workshop($workshopId): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return Workshop::where('id', $workshopId)
+            ->where('user_id', Auth::id())
+            ->exists();
+    }
+}
+
+function normalizeFiles($files)
+{
+    // Если пришёл не JSON, вернуть пустой массив
+    if (!is_string($files) || $files === '') {
+        return [];
+    }
+
+    // Пробуем декодировать JSON
+    $decoded = json_decode($files, true);
+
+    // Если JSON невалидный
+    if ($decoded === null) {
+        return [];
+    }
+
+    // Вариант 1: ["path.jpg"]
+    if (is_array($decoded) && isset($decoded[0])) {
+        return $decoded;
+    }
+
+    // Вариант 2: {"result": ["path.jpg"]}
+    if (is_array($decoded) && isset($decoded['result'])) {
+        return $decoded['result'];
+    }
+
+    return [];
 }
 
 ///*/musa///*/

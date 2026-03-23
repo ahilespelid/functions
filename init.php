@@ -315,9 +315,23 @@ if (!function_exists('first_slash')) {
     }
 }
 
-if(!function_exists('fix_image_path')) {
-    function fix_image_path($image_path, $adding_path = "/upload/zakaz/") {
-        return first_slash($adding_path) . $image_path;
+if (!function_exists('fix_image_path')) {
+    function fix_image_path($image_path, $adding_path = "/upload/zakaz/")
+    {
+        if (empty($image_path)) {
+            return null;
+        }
+
+        // если массив — берём первый элемент
+        if (is_array($image_path)) {
+            $image_path = $image_path[0] ?? null;
+        }
+
+        if (!$image_path) {
+            return null;
+        }
+
+        return first_slash($adding_path) . ltrim($image_path, '/');
     }
 }
 
@@ -395,12 +409,18 @@ use App\Models\Workshop;
 if (!function_exists('is_users_workshop')) {
     function is_users_workshop($workshopId): bool
     {
-        if (!Auth::check()) {
+        $user = Auth::user();
+
+        if (!$user) {
             return false;
         }
 
+        if ($user->admin) {
+            return true;
+        }
+
         return Workshop::where('id', $workshopId)
-            ->where('user_id', Auth::id())
+            ->where('user_id', $user->id)
             ->exists();
     }
 }
